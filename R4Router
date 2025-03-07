@@ -1,0 +1,38 @@
+hostname R4
+!
+# Loopback Interface for Testing
+interface Loopback0
+ ip address 192.168.99.1 255.255.255.0
+ ipv6 address 2001:DB8:99:1::1/64
+!
+# Ethernet0/0 Connection to R3
+interface Ethernet0/0
+ ip address 192.168.77.2 255.255.255.252
+ ipv6 address 2001:DB8:FEED:77::2/64
+ no shutdown
+!
+# Enable OSPF (IPv4)
+router ospf 1
+ network 192.168.77.0 0.0.0.3 area 0
+ network 192.168.99.0 0.0.0.255 area 0
+!
+# Enable OSPF (IPv6)
+ipv6 router ospf 1
+ router-id 4.4.4.4
+ exit
+!
+# Enable BGP (IPv4)
+router bgp 65000
+ neighbor 192.168.77.1 remote-as 65000
+ network 192.168.77.0 mask 255.255.255.252
+ network 192.168.99.0 mask 255.255.255.0
+!
+# Enable IPv6 Routing
+ipv6 unicast-routing
+
+
+check configurations by:
+show ip interface brief        # Check IPv4 addresses
+show ipv6 interface brief      # Check IPv6 addresses
+show ip route                 # View IPv4 routing table
+show ipv6 route               # View IPv6 routing table
