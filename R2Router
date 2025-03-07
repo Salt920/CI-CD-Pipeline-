@@ -1,0 +1,47 @@
+hostname R2
+!
+# Loopback Interface for Testing
+interface Loopback0
+ ip address 192.168.3.1 255.255.255.0
+ ipv6 address 2001:DB8:CAFE:3::1/64
+!
+# Ethernet0/0 Connection to R1
+interface Ethernet0/0
+ ip address 192.168.2.2 255.255.255.252
+ ipv6 address 2001:DB8:CAFE:2::2/64
+ no shutdown
+!
+# Ethernet0/1 Connection to R3
+interface Ethernet0/1
+ ip address 192.168.4.1 255.255.255.252
+ ipv6 address 2001:DB8:CAFE:4::1/64
+ no shutdown
+!
+# Enable EIGRP (IPv4)
+router eigrp 100
+ network 192.168.2.0 0.0.0.3
+!
+# Enable OSPF (IPv4)
+router ospf 1
+ network 192.168.3.0 0.0.0.255 area 0
+ network 192.168.4.0 0.0.0.3 area 0
+!
+# Enable EIGRP (IPv6)
+ipv6 router eigrp 100
+ no shutdown
+!
+# Enable OSPF (IPv6)
+ipv6 router ospf 1
+ router-id 2.2.2.2
+ exit
+!
+# Enable BGP (IPv4)
+router bgp 65000
+ neighbor 192.168.2.1 remote-as 65000
+ neighbor 192.168.4.2 remote-as 65000
+ network 192.168.2.0 mask 255.255.255.252
+ network 192.168.3.0 mask 255.255.255.0
+ network 192.168.4.0 mask 255.255.255.252
+!
+# Enable IPv6 Routing
+ipv6 unicast-routing
